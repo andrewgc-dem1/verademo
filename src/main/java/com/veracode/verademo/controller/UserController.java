@@ -184,13 +184,14 @@ public class UserController {
 					UserFactory.updateInResponse(currentUser, response);
 				}
 
-				logger.info("Setting session username to " + username);
-				req.getSession().setAttribute("username", username);
-
 				// if the username ends with "totp", add the TOTP login step
 				if (username.substring(username.length() - 4).equalsIgnoreCase("totp")) {
 					logger.info("User " + username + " has TOTP enabled");
+					req.getSession().setAttribute("totp_username", username);
 					nextView = "redirect:totp";
+				} else {
+					logger.info("Setting session username to " + username);
+					req.getSession().setAttribute("username", username);
 				}
 
 			} else {
@@ -282,7 +283,7 @@ public class UserController {
 			Model model,
 			HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) {
-		String username = (String) httpRequest.getSession().getAttribute("username");
+		String username = (String) httpRequest.getSession().getAttribute("totp_username");
 		logger.info("Entering showTotp for user " + username);
 
 		// lookup the TOTP secret
@@ -323,7 +324,7 @@ public class UserController {
 			Model model,
 			HttpServletRequest httpRequest,
 			HttpServletResponse httpResponse) {
-		String username = (String) httpRequest.getSession().getAttribute("username");
+		String username = (String) httpRequest.getSession().getAttribute("totp_username");
 		logger.info("Entering processTotp for user " + username + ", code entered: " + totpCode);
 
 		String nextView = "redirect:login"; // assume we're going to fail
@@ -351,11 +352,13 @@ public class UserController {
 				// code = the code submitted by the user
 				if (verifier.isValidCode(totpSecret, totpCode)) {
 					logger.info("TOTP validation success");
+					httpRequest.getSession().setAttribute("username", username);
 					nextView = "redirect:feed";
 				} else {
 					logger.info("TOTP validation failure");
 
 					httpRequest.getSession().setAttribute("username", null);
+					httpRequest.getSession().setAttribute("totp_username", null);
 
 					User currentUser = null;
 					UserFactory.updateInResponse(currentUser, httpResponse);
@@ -383,6 +386,7 @@ public class UserController {
 		logger.info("Entering processLogout");
 
 		req.getSession().setAttribute("username", null);
+		req.getSession().setAttribute("totp_username", null);
 
 		User currentUser = null;
 		UserFactory.updateInResponse(currentUser, response);
