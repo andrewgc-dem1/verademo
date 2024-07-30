@@ -35,10 +35,10 @@ dockerize:
     variables:
         DOCKER_DRIVER: overlay2
         # docker 19.03 has TLS on by default, see https://about.gitlab.com/releases/2019/07/31/docker-in-docker-with-docker-19-dot-03/
-        DOCKER_TLS_CERTDIR: ""  
+        DOCKER_TLS_CERTDIR: ""
         REPOSITORY_URL: $REPO_URL
     services:
-        - docker:19.03.0-dind
+        - docker:23.0.1-dind
     before_script:
         - apk add --update python3 py-pip
         - pip3 install awscli
