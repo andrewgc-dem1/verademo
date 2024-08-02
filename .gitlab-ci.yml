@@ -44,10 +44,10 @@ dockerize:
         - pip3 install awscli
     script:
         - $(aws ecr get-login --no-include-email --region us-east-2)
-        - docker build -t verademo:$CI_PIPELINE_ID .
-        - docker tag verademo:$CI_PIPELINE_ID $REPOSITORY_URL:verademo-latest
-        - docker tag verademo:$CI_PIPELINE_ID $REPOSITORY_URL:verademo-$CI_PIPELINE_ID
-        - docker push $REPOSITORY_URL:verademo-latest
-        - docker push $REPOSITORY_URL:verademo-$CI_PIPELINE_ID
+        - docker build -t verademo-java:$CI_PIPELINE_ID .
+        - docker tag verademo-java:$CI_PIPELINE_ID $REPOSITORY_URL:verademo-java-latest
+        - docker tag verademo-java:$CI_PIPELINE_ID $REPOSITORY_URL:verademo-java-$CI_PIPELINE_ID
+        - docker push $REPOSITORY_URL:verademo-java-latest
+        - docker push $REPOSITORY_URL:verademo-java-$CI_PIPELINE_ID
     after_script:
         - docker images
