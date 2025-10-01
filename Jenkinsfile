@@ -1,5 +1,5 @@
 /*
- * Normal Jenkinsfile that will build and do Policy and SCA scans
+ * Normal Jenkinsfile that will build and do Policy and SCA scans.
  */
 
 pipeline {
